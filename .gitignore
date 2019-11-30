@@ -1,0 +1,15 @@
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/clojure/lib/
+/clojure/classes/
+/clojure/target/
+/clojure/checkouts/
+/target/
+.lein-deps-sum
+.lein-repl-history
+.clojure/lein-plugins/
+.lein-failures
+.nrepl-port
+.clojure/cpcache/
