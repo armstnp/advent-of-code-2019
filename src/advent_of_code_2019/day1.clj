@@ -1,18 +1,31 @@
-;; Set NS before starting: C-c M-n n
 (ns advent-of-code-2019.day1
   (:require [advent-of-code-2019.core :as core]
-            [advent-of-code-2019.left-shark :as ls]
-            [clojure.string :as str]
-            [clojure.math.combinatorics :as combo]
-            [is-prime.core :refer [is-prime]]))
-;;  (:import  [org.jgrapht.graph SimpleDirectedWeightedGraph Pseudograph DefaultEdge DefaultWeightedEdge]))
+            [clojure.string :as str]))
 
-(def input (->> "day1.txt" core/read-input str/split-lines))
+(def input
+  (->> "day1.txt"
+       core/read-input
+       str/split-lines
+       (map core/parse-int)))
 
-(defn parse-line
-  [s]
-  (-> s
-      :components
-      (ls/parse
-       ;; Fill in parse components here
-       )))
+;; Part 1 Solution
+
+(def fuel-for-mass #(- (quot % 3) 2))
+
+(->> input
+     (map fuel-for-mass)
+     (reduce +))
+
+;; Part 2 Solution
+
+(defn compound-fuel-for-mass
+  [n]
+  (->> n
+       (iterate fuel-for-mass)
+       (drop 1)
+       (take-while #(> % 0))
+       (reduce +)))
+
+(->> input
+     (map compound-fuel-for-mass)
+     (reduce +))
