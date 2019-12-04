@@ -1,4 +1,3 @@
-;; Set NS before starting: C-c M-n n
 (ns advent-of-code-2019.day3
   (:require [advent-of-code-2019.core :as core]
             [clojure.string :as str]))
