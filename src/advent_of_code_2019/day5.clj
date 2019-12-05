@@ -19,8 +19,10 @@
 
 (defn binary-op
   [{:keys [memory ip] :as computer} modes bin-fn]
-  (let [[in-val-1 in-val-2 out-addr] (->> memory (drop (inc ip)) (take 3))
-        [in-val-1 in-val-2] (map (partial param-value memory) modes [in-val-1 in-val-2])
+  (let [[in-val-1 in-val-2] (map (partial param-value memory)
+                                 modes
+                                 (subvec memory (inc ip) (+ ip 3)))
+        out-addr (nth memory (+ ip 3))
         out-val (bin-fn in-val-1 in-val-2)]
     (-> computer
         (assoc-in [:memory out-addr] out-val)
@@ -36,7 +38,7 @@
 
 (defn op-in
   [{:keys [memory ip in-stack] :as computer} _modes]
-  (let [out-addr (->> memory (drop (inc ip)) first)
+  (let [out-addr (nth memory (inc ip))
         in-val (first in-stack)]
     (-> computer
         (assoc-in [:memory out-addr] in-val)
@@ -52,11 +54,12 @@
 
 (defn jump-op
   [{:keys [memory ip] :as computer} modes test-fn instr-length]
-  (let [[test-val jump-addr] (->> memory
-                                  (drop (inc ip))
-                                  (take 2)
-                                  (map (partial param-value memory) modes))
-        ip' (if (test-fn test-val) jump-addr (+ ip instr-length))]
+  (let [[test-val jump-addr] (map (partial param-value memory)
+                                  modes
+                                  (subvec memory (inc ip) (+ ip 3)))
+        ip' (if (test-fn test-val)
+              jump-addr
+              (+ ip instr-length))]
     (assoc computer :ip ip')))
 
 (defn op-jump-if-true
