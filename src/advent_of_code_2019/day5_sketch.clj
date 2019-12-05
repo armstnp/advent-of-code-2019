@@ -83,7 +83,7 @@
                  (1 2 5 6 7 8) (->> memory
                                     (drop (inc ip))
                                     (take 2)
-                                    (map addr-by-mode modes (range (inc ip)))
+                                    (map addr-by-mode modes (range (inc ip) (+ 3 ip)))
                                     set)
                  4 (->> ip
                         inc
@@ -148,4 +148,4 @@
 
   :middleware [m/fun-mode])
 
-;; Hosted at http://quil.info/sketches/show/41aecab991e19a5ae696e9d6ade7cdd4fbc5463f250b777e7689a71cafa750eb
+;; Hosted at http://quil.info/sketches/show/e73e5daea052772c66ae391140ede3fd1c0ff6ebe950476b8e85bb10f0769980
