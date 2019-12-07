@@ -35,15 +35,19 @@
   (ffirst (filter #(= v (second %)) m)))
 
 (defn rotate-left
-  [n coll]
-  (->> coll
-    cycle
-    (drop n)
-    (take (count coll))))
+  ([coll]
+   (rotate-left 1 coll))
+  ([n coll]
+   (->> coll
+     cycle
+     (drop n)
+     (take (count coll)))))
 
 (defn rotate-right
-  [n coll]
-  (rotate-left (- (count coll) (mod n (count coll))) coll))
+  ([coll]
+   (rotate-right 1 coll))
+  ([n coll]
+   (rotate-left (- (count coll) (mod n (count coll))) coll)))
 
 (defn clamp
   [n min-val max-val]
