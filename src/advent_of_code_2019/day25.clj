@@ -9,10 +9,9 @@
 
 (def input (->> "day25.txt" core/read-input str/split-lines))
 
-(defn parse-line
-  [s]
-  (-> s
-      :components
-      (ls/parse
-       ;; Fill in parse components here
-       )))
+(def parse-line
+  (comp
+    :components
+    (ls/parse
+     ;; Fill in parse components here
+     )))
