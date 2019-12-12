@@ -101,11 +101,11 @@
 (def $ demand-consumed)
 
 (defn int!
-  [consumer component-name]
+  [component-name]
   (demand #"-?\d+" component-name core/parse-int))
 
 (defn int?
-  [consumer component-name]
+  [component-name]
   (attempt #"-?\d+" component-name core/parse-int))
 
 ;; To implement sequence consumer, you'll need to adapt your interface.
