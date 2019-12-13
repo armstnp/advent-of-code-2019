@@ -184,6 +184,40 @@
      (filter (partial = 2))
      count)
 
+(defn run-by-following-ball
+  [{:keys [in-stack out-queue halt ball-x paddle-x] :as computer}]
+  (if halt
+    computer
+    (let [ball-x' (or (seek-tile out-queue 4) ball-x)
+          paddle-x' (or (seek-tile out-queue 3) paddle-x)
+          input (cond
+                  (nil? ball-x') '(0)
+                  (nil? paddle-x') '(0)
+                  (< ball-x' paddle-x') '(-1)
+                  (> ball-x' paddle-x') '(1)
+                  :else '(0))]
+      (-> computer
+          (assoc :in-stack input)
+          (dissoc :awaiting-input)
+          (assoc :out-queue [])
+          (assoc :ball-x ball-x')
+          (assoc :paddle-x paddle-x')
+          run-program))))
+
+;; Without rendering; this will be much faster
+#_(-> input
+    (assoc 0 2)
+    (init-program '())
+    (->>
+     (iterate run-by-following-ball)
+     (drop-while (complement :halt))
+     first
+     :out-queue
+     (partition 3)
+     (filter #(and (= -1 (first %)) (zero? (second %))))
+     first
+     (#(nth % 2))))
+
 ;; Drawing
 
 (let [[min-x max-x] (->> screen
@@ -204,7 +238,6 @@
 (def canvas-width (* cell-size (inc max-x)))
 (def canvas-height (+ (* cell-size (inc max-y)) score-buffer))
 
-
 (defn setup
   []
   (q/frame-rate 60)
@@ -213,11 +246,7 @@
   (q/text-size 10)
   (q/text-align :left :center)
   (q/no-stroke)
-  {:memory (assoc input 0 2)
-   :ip 0
-   :rel-base 0
-   :in-stack '()
-   :out-queue []})
+  (init-program (assoc input 0 2) '()))
 
 (defn draw-score
   [score win?]
@@ -265,32 +294,12 @@
        first
        first))
 
-(defn update-state
-  [{:keys [in-stack out-queue halt ball-x paddle-x] :as computer}]
-  (if halt
-    computer
-    (let [ball-x' (or (seek-tile out-queue 4) ball-x)
-          paddle-x' (or (seek-tile out-queue 3) paddle-x)
-          input (cond
-                  (nil? ball-x') '(0)
-                  (nil? paddle-x') '(0)
-                  (< ball-x' paddle-x') '(-1)
-                  (> ball-x' paddle-x') '(1)
-                  :else '(0))]
-      (-> computer
-          (assoc :in-stack input)
-          (dissoc :awaiting-input)
-          (assoc :out-queue [])
-          (assoc :ball-x ball-x')
-          (assoc :paddle-x paddle-x')
-          run-program))))
-
 (q/defsketch day13-sketch
   :title "AoC 2019-13: Care Package"
   :size [canvas-width canvas-height]
 
   :setup setup
-  :update update-state
+  :update run-by-following-ball
   :draw draw-state
 
   :middleware [m/fun-mode])
